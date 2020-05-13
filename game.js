@@ -56,7 +56,7 @@ function draw() {
       }
       for (let row = 0; row <= 6; row++) {
         for (let col = 0; col < 7; col++) {
-          ctx.strokeRect(col*100, row*100, 100, 100);
+          //ctx.strokeRect(col*100, row*100, 100, 100);
         }
       }
   }
