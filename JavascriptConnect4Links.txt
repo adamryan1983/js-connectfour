@@ -1,0 +1,12 @@
+Basic canvas usage:
+https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_usage
+
+Drawing shapes with canvas:
+https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
+
+Getting the mouse click coordinates inside a canvas:
+https://www.geeksforgeeks.org/how-to-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/
+
+Creating 2 dimensional arrays in javascript:
+https://www.geeksforgeeks.org/how-to-create-two-dimensional-array-in-javascript/
+
