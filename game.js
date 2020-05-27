@@ -39,7 +39,7 @@ blackBG.src = "/assets/BlackQuad.png";
 
 
 let startPos = new Array(4);  //0 horizontal pixel position of start drop
-                                //2 horizontal piece starts at, 3 vert position piece starts at
+                              //2 horizontal piece starts at, 3 vert position piece starts at
 let endPos = new Array(4);    
 let dropTimer;
 
@@ -96,14 +96,10 @@ const checkWin = (col, row, player) => {
     }
 
     if (count >= 4) {
-      gameState = player == 1 ? state.YELLOWWINS : state.REDWINS;
-      break;
-    }
-    else {
-      gameState = state.PLAYING;
+      return player == 1 ? state.YELLOWWINS : state.REDWINS;
     }
   }
-  if (gameState === state.PLAYING) {
+
     let draw = true;
     for (let row = 0; row <= 6; row++) {
       for (let col = 0; col < 7; col++) {
@@ -111,9 +107,11 @@ const checkWin = (col, row, player) => {
             draw = false;
           }
       }
-    }
     if (draw) {
-      gameState === state.DRAW;
+      return state.DRAW;
+    }
+    else {
+      return state.PLAYING;
     }
   }
 }
@@ -126,7 +124,7 @@ for (let i = 0; i < 7; i++) {
 const placePiece = (col) => {
   for (let row = 5; row >=0; row--) {
     if(board[col][row] == 0) {
-      if(player == 1) {
+      if(player === 1) {
         startPos = [col*100 + offsetPlayer1[0], offsetPlayer1[1],col,0];
         endPos = [col*100 + offsetPlayer1[0], row*100 + offsetPlayer1[1],col,row];
         // board[col][row] = 1;
@@ -153,7 +151,10 @@ const dropPiece = () => {
   if (startPos[1] >= endPos[1]) {
     clearInterval(dropTimer);
     board[endPos[2]][endPos[3]] = player;
-    checkWin(endPos[2],endPos[3],player);
+    gameState = checkWin(endPos[2],endPos[3],player);
+    if( gameState === state.PLAYING && player === 2) {
+      computerTurn();
+    }
   }
   draw();
 }
@@ -198,25 +199,81 @@ const draw = () => {
         ctx.drawImage(blackBG, 0,0);
         ctx.drawImage(player1Wins, 200, 200);
         ctx.drawImage(playAgain,200,350);
+        player = 1;
       }
       else if (gameState === state.YELLOWWINS) {
         ctx.drawImage(blackBG, 0,0);
         ctx.drawImage(player2Wins, 200, 200);
         ctx.drawImage(playAgain,200,350);
+        player = 1;
       }
       else if (gameState === state.DRAW) {
         ctx.drawImage(blackBG, 0,0);
         ctx.drawImage(playAgain,200,350);
+        player = 1;
       }
   }
 };
+
+const computerTurn = () => {
+  // looks for a move which wins the game for the computer
+  for (let col = 0; col < 7; col++) {
+    for (let row = 5; row >= 0; row--) {
+      if (board[col][row] === 0) {
+        board[col][row] = 2;
+        let gameStateAfterMove = checkWin(col,row, 1);
+        board[col][row] = 0;
+        if (gameStateAfterMove === state.YELLOWWINS) {
+          console.log("Got you sucka!")
+          placePiece(col);
+          return
+        }
+        break;
+      }
+    }
+  }
+
+  // look for a move where the human can win the game
+  for (let col = 0; col < 7; col++) {
+    for (let row = 5; row >= 0; row--) {
+      if (board[col][row] === 0) {
+        board[col][row] = 1;
+        let gameStateAfterMove = checkWin(col,row, 2);
+        board[col][row] = 0;
+        if (gameStateAfterMove === state.REDWINS) {
+          console.log("i dont think so mr.")
+          placePiece(col);
+          return
+        }
+        break;
+      }
+    }
+  }
+
+
+
+  // want to make a random move
+  let randomColumnOffset = parseInt(Math.random() * 7);
+  for (let i = 0; i < 7; i++) {
+    let col = i + randomColumnOffset;
+    col = col % 7;
+    for (let row = 5; row >= 0; row--) {
+      if (board[col][row] === 0) {
+        //place piece
+        placePiece(col);
+        return;
+      }
+    }
+  }
+
+}
 
 const getMousePosition = (canvas, event) => { 
   let rect = canvas.getBoundingClientRect(); 
   let x = event.clientX - rect.left; 
   let y = event.clientY - rect.top; 
 
-  if ( gameState === state.PLAYING ) {
+  if ( gameState === state.PLAYING && player === 1 ) {
     let col = parseInt(x / 100);
     placePiece(col);
   }
